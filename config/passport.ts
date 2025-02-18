@@ -6,7 +6,7 @@ dotenv.config();
 // Your GitHub OAuth app credentials
 const GITHUB_CLIENT_ID = process.env.AUTH_GITHUB_ID as string;
 const GITHUB_CLIENT_SECRET = process.env.AUTH_GITHUB_SECRET as string;
-const CALLBACK_URL = 'http://localhost:5000/auth/github/callback';
+const CALLBACK_URL = 'http://localhost:8000/auth/github/callback';
 
 // Passport serialization
 passport.serializeUser((user: any, done) => {
@@ -50,6 +50,7 @@ passport.use(
             profileUrl: profile.profileUrl,
             photos: profile.photos,
             email: profile.emails?.[0]?.value,
+            provider: 'github',
           });
         }
 

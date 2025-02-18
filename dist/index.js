@@ -8,11 +8,14 @@ const express_1 = __importDefault(require("express"));
 const express_session_1 = __importDefault(require("express-session"));
 const db_1 = __importDefault(require("./config/db"));
 const passport_1 = __importDefault(require("./config/passport"));
+const error_1 = __importDefault(require("./middlewares/error"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const port = 8000;
 const app = (0, express_1.default)();
 dotenv_1.default.config();
 (0, db_1.default)();
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, express_session_1.default)({
     secret: process.env.SESSION_SECRET || 'keyboard cat',
     resave: false,
@@ -22,7 +25,7 @@ app.use((0, express_session_1.default)({
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
 // Routes
-app.use('/auth', auth_1.default);
+app.use('/api/v1/auth', auth_1.default);
 // Home route
 app.get('/', (req, res) => {
     if (req.isAuthenticated()) {
@@ -38,6 +41,7 @@ app.get('/', (req, res) => {
 app.get('/hi', (req, res) => {
     res.send('BYEEE!!');
 });
+app.use(error_1.default);
 app.listen(port, () => {
     console.log(`now listening on port ${port}`);
 });

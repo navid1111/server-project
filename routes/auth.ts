@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import passport from 'passport';
+import { login, register } from '../controllers/auth';
 
 const router = express.Router();
 
@@ -15,10 +16,14 @@ router.get(
     res.redirect('/');
   },
 );
+router.post('/register', register);
+
+router.post('/login', login);
 
 // Logout route
 router.get('/logout', (req: Request, res: Response, next) => {
   // Modern version of passport requires callback
+
   req.logout(err => {
     if (err) {
       return next(err);
