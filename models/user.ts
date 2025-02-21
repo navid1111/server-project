@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { Document, Model, Schema, model } from 'mongoose';
 
 export interface IUser extends Document {
+  id: string; // Add this line
   githubId?: string;
   displayName?: string;
   firstName?: string;
