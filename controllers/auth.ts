@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { CookieOptions, NextFunction, Request, Response } from 'express';
 import validator from 'validator';
 import asyncHandler from '../middlewares/async';
 import User, { IUser as UserDocument } from '../models/user';
@@ -17,6 +17,13 @@ interface LoginBody {
   email: string;
   password: string;
 }
+
+const cookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax',
+  maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+};
 
 /**
  * @route   POST /api/v1/auth/register
@@ -71,7 +78,7 @@ export const register = asyncHandler(
     // Remove sensitive data from response
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
-
+    res.cookie('token', token, cookieOptions);
     res.status(201).json({
       success: true,
       data: { user: userWithoutPassword, token },
@@ -129,10 +136,28 @@ export const login = asyncHandler(
     // Remove sensitive data from response
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
-
+    res.cookie('token', token, cookieOptions);
     res.status(200).json({
       success: true,
       data: { user: userWithoutPassword, token },
+    });
+  },
+);
+export const getMe = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return next(new ErrorResponse('User not authenticated', 401));
+    }
+
+    const user = await User.findById(req.user.id).select('-password');
+
+    if (!user) {
+      return next(new ErrorResponse('User not found', 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      data: user,
     });
   },
 );

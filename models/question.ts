@@ -1,24 +1,34 @@
-import { Document, Schema, Types, model } from 'mongoose';
+import { Document, Schema, model } from 'mongoose';
+import { IUser } from './user';
 
-interface IQuestion extends Document {
+export interface IQuestion extends Document {
   title: string;
   body: string;
-  tags: string[];
-  author: Types.ObjectId;
-  votes: number;
+  author: IUser['id'];
+  // Add other fields as needed
 }
 
-const questionSchema = new Schema<IQuestion>(
+const QuestionSchema = new Schema(
   {
-    title: { type: String, required: true },
-    body: { type: String, required: true },
-    tags: { type: [String], default: [] },
-    author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    votes: { type: Number, default: 0 },
+    title: {
+      type: String,
+      required: [true, 'Please add a title'],
+      trim: true,
+      maxlength: [100, 'Title cannot be more than 100 characters'],
+    },
+    body: {
+      type: String,
+      required: [true, 'Please add question content'],
+    },
+    author: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+  },
 );
 
-const Question = model<IQuestion>('Question', questionSchema);
-
-export default Question;
+export default model<IQuestion>('Question', QuestionSchema);

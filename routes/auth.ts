@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import passport from 'passport';
-import { login, register } from '../controllers/auth';
+import { getMe, login, register } from '../controllers/auth';
+import { protect } from '../middlewares/protect';
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ router.get(
 router.post('/register', register);
 
 router.post('/login', login);
-
+router.get('/me', protect, getMe);
 // Logout route
 router.get('/logout', (req: Request, res: Response, next) => {
   // Modern version of passport requires callback

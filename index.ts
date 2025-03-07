@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import express, { Express, Request, Response } from 'express';
 import session from 'express-session';
@@ -5,12 +6,16 @@ import connectDB from './config/db';
 import passport from './config/passport';
 import errorHandler from './middlewares/error';
 import authRoutes from './routes/auth';
+import questionRoutes from './routes/questions';
+
 const port = 8000;
 
 const app: Express = express();
 dotenv.config();
 connectDB();
 app.use(express.json());
+app.use(cookieParser());
+
 app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
@@ -26,6 +31,7 @@ app.use(passport.session());
 
 // Routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/questions', questionRoutes);
 
 // Home route
 app.get('/', (req, res) => {
